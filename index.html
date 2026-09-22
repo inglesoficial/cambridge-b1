@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Cambridge B1 Preliminary · Writing Part 1</title>
+
+  <style>
+    :root {
+      --navy: #0f172a;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --blue-border: #bfdbfe;
+      --text: #334155;
+      --muted: #64748b;
+      --green: #15803d;
+      --green-light: #dcfce7;
+      --white: #ffffff;
+      --background: #e6dbb9;
+      --border: #e2e8f0;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 42px 20px 65px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    header h1 {
+      color: var(--navy);
+      font-size: 2.35rem;
+      line-height: 1.2;
+      margin: 0 0 8px;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin: 0;
+    }
+
+    .card,
+    .template,
+    .practice-box {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card h2,
+    .practice-box h2 {
+      color: var(--navy);
+      margin: 0 0 14px;
+      font-size: 1.45rem;
+    }
+
+    .card h3 {
+      color: var(--navy);
+    }
+
+    p {
+      margin-top: 0;
+    }
+
+    /* INTRO */
+
+    .intro {
+      background: var(--blue-light);
+      border-color: var(--blue-border);
+    }
+
+    .intro p:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .key-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--blue);
+      padding: 17px 19px;
+      border-radius: 10px;
+      margin-top: 18px;
+    }
+
+    .key-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* OBJETIVO */
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .step {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      background: #f8fafc;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .step h3 {
+      margin: 0 0 5px;
+      font-size: 1rem;
+    }
+
+    .step p {
+      margin: 0;
+      font-size: 0.94rem;
+    }
+
+    /* ANÁLISIS */
+
+    .analysis-box {
+      background: var(--blue-light);
+      border: 1px solid var(--blue-border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .analysis-box h3 {
+      margin: 0 0 13px;
+    }
+
+    .analysis-item {
+      margin-bottom: 10px;
+    }
+
+    .analysis-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .analysis-item strong {
+      color: var(--blue);
+    }
+
+    /* DESARROLLAR IDEAS */
+
+    .example-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .compare-box {
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+    }
+
+    .compare-box strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--navy);
+    }
+
+    .compare-box p {
+      margin: 0;
+    }
+
+    .development-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .development-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 17px;
+    }
+
+    .development-item h3 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+    }
+
+    .development-item p {
+      margin: 0;
+      font-size: 0.92rem;
+    }
+
+    /* EMAIL */
+
+    .email-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--blue);
+      border-radius: 12px;
+      padding: 21px;
+      margin-top: 20px;
+    }
+
+    .email-header {
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .email-header p {
+      margin: 4px 0;
+    }
+
+    .email-header strong {
+      color: var(--navy);
+    }
+
+    .email-body p {
+      margin: 0 0 16px;
+    }
+
+    .email-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .task-point {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 0.88rem;
+    }
+
+    /* PASO 3 */
+
+    .structure-intro {
+      margin-bottom: 18px;
+    }
+
+    .structure-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .structure-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .structure-number {
+      flex: 0 0 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--blue);
+      color: white;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .structure-content {
+      min-width: 0;
+    }
+
+    .structure-content strong {
+      color: var(--navy);
+    }
+
+    /* FRASES */
+
+    .phrase-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 25px;
+    }
+
+    .phrase-list li {
+      padding: 10px 0 10px 23px;
+      position: relative;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .phrase-list li::before {
+      content: "\2192";
+      position: absolute;
+      left: 0;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .phrase-list strong {
+      color: var(--navy);
+    }
+
+    /* PLANTILLA */
+
+    .template {
+      background: var(--blue-light);
+      border-color: var(--blue-border);
+    }
+
+    .template h3 {
+      color: var(--navy);
+      margin: 0 0 15px;
+    }
+
+    .template pre {
+      white-space: pre-wrap;
+      font-family: inherit;
+      line-height: 1.7;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .template .placeholder {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    /* CHECKLIST */
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 0.95rem;
+    }
+
+    .checklist li::before {
+      content: "\2713";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      background: var(--green-light);
+      color: var(--green);
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    /* EJERCICIO */
+
+    .practice-box {
+      border: 2px solid var(--blue-border);
+      margin-top: 34px;
+      padding: 30px;
+    }
+
+    .practice-intro {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .student-writing {
+      margin-top: 25px;
+    }
+
+    .student-writing h3 {
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 330px;
+      padding: 17px;
+      border: 1px solid #cbd5e1;
+      border-radius: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      background: white;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .writing-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-top: 12px;
+    }
+
+    .word-counter {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .word-counter.good {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .word-counter.warning {
+      color: #b45309;
+      font-weight: 700;
+    }
+
+    .check-button {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 9px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .check-button:hover {
+      opacity: 0.9;
+    }
+
+    .feedback-area {
+      display: none;
+      margin-top: 25px;
+    }
+
+    .feedback-area.visible {
+      display: block;
+    }
+
+    .feedback-box {
+      background: var(--blue-light);
+      border: 1px solid var(--blue-border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .feedback-box h3 {
+      color: var(--navy);
+      margin-top: 0;
+    }
+
+    .feedback-note {
+      color: var(--muted);
+      font-size: 14px;
+      font-style: italic;
+    }
+
+.feedback-note {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+}
+
+
+/* REALIZACIÓN DE LA TAREA */
+
+.task-achievement {
+  display: grid;
+  gap: 10px;
+}
+
+.task-point {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+}
+
+.task-point-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-weight: 800;
+  font-family: Arial, sans-serif;
+}
+
+.task-point.completed .task-point-icon {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.task-point.missing .task-point-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+
+.feedback-button {
+  margin-top: 12px;
+  background: white;
+  color: var(--blue);
+  border: 1px solid var(--blue);
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+    .feedback-button {
+      margin-top: 12px;
+      background: white;
+      color: var(--blue);
+      border: 1px solid var(--blue);
+      border-radius: 9px;
+      padding: 9px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 38px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 750px) {
+
+      .steps,
+      .example-compare,
+      .development-grid,
+      .phrase-list,
+      .checklist {
+        grid-template-columns: 1fr;
+      }
+
+      .writing-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .check-button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      .container {
+        padding: 25px 15px 50px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .card,
+      .template,
+      .practice-box {
+        padding: 21px;
+      }
+
+      .email-box {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <header>
+      <h1>Cambridge B1 Preliminary</h1>
+      <p>Writing · Part 1 · Email</p>
+    </header>
+
+
+    <!-- INTRODUCCIÓN -->
+
+    <section class="card intro">
+
+      <h2>📧 Writing Part 1: Email</h2>
+
+      <p>
+        En esta parte del examen tienes que responder a un email
+        y escribir aproximadamente <strong>100–120 palabras</strong>.
+      </p>
+
+      <p>
+        La clave es sencilla:
+        <strong>responde a todos los puntos y desarrolla tus ideas.</strong>
+      </p>
+
+      <div class="key-box">
+
+        <p>
+          💡 No basta con contestar con una frase corta.
+          Añade una razón, un ejemplo o un detalle.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- OBJETIVO -->
+
+    <section class="card">
+
+      <h2>🎯 ¿Qué debes conseguir?</h2>
+
+      <div class="steps">
+
+        <div class="step">
+
+          <div class="step-number">1</div>
+
+          <h3>Responder</h3>
+
+          <p>
+            Contesta todos los puntos de la tarea.
+          </p>
+
+        </div>
+
+        <div class="step">
+
+          <div class="step-number">2</div>
+
+          <h3>Desarrollar</h3>
+
+          <p>
+            Añade razones, ejemplos o detalles.
+          </p>
+
+        </div>
+
+        <div class="step">
+
+          <div class="step-number">3</div>
+
+          <h3>Organizar</h3>
+
+          <p>
+            Utiliza párrafos claros y fáciles de seguir.
+          </p>
+
+        </div>
+
+        <div class="step">
+
+          <div class="step-number">4</div>
+
+          <h3>Sonar natural</h3>
+
+          <p>
+            Adapta el tono a la persona que escribe el email.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PASO 1 -->
+
+    <section class="card">
+
+      <h2>🔎 Paso 1: Detecta los puntos de la tarea</h2>
+
+      <p>
+        Antes de escribir, identifica exactamente qué tienes que responder.
+      </p>
+
+      <div class="analysis-box">
+
+        <div class="analysis-item">
+          <strong>1. ¿Cuál es la situación?</strong>
+          ¿De qué habla el email?
+        </div>
+
+        <div class="analysis-item">
+          <strong>2. ¿A quién escribo?</strong>
+          ¿Es un amigo, compañero u otra persona?
+        </div>
+
+        <div class="analysis-item">
+          <strong>3. ¿Qué me pregunta?</strong>
+          Busca todos los puntos que debes responder.
+        </div>
+
+        <div class="analysis-item">
+          <strong>4. ¿Qué puedo añadir?</strong>
+          Piensa en una razón o detalle para cada respuesta.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PASO 2 -->
+
+    <section class="card">
+
+      <h2>💡 Paso 2: Desarrolla tus ideas</h2>
+
+      <p>
+        Una respuesta breve puede convertirse fácilmente en una respuesta
+        mejor si añades una razón o un detalle.
+      </p>
+
+      <div class="example-compare">
+
+        <div class="compare-box">
+
+          <strong>Demasiado corta</strong>
+
+          <p>
+            <em>I think Saturday is better.</em>
+          </p>
+
+        </div>
+
+        <div class="compare-box">
+
+          <strong>Más desarrollada</strong>
+
+          <p>
+            <em>
+              I think Saturday is better because everyone will be free
+              and we won't have to get up early the next day.
+            </em>
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="development-grid">
+
+        <div class="development-item">
+
+          <h3>💬 Razón</h3>
+
+          <p>
+            <em>because...</em>
+          </p>
+
+        </div>
+
+        <div class="development-item">
+
+          <h3>📝 Ejemplo</h3>
+
+          <p>
+            <em>For example,...</em>
+          </p>
+
+        </div>
+
+        <div class="development-item">
+
+          <h3>➕ Detalle</h3>
+
+          <p>
+            <em>It would also...</em>
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- EJEMPLO DIFERENTE -->
+
+    <section class="card">
+
+      <h2>📨 Ejemplo: primero hacemos un plan</h2>
+
+      <p>
+        Vamos a practicar el método con una tarea diferente
+        a la del ejercicio final.
+      </p>
+
+      <div class="email-box">
+
+        <div class="email-header">
+
+          <p>
+            <strong>From:</strong> Lucy
+          </p>
+
+          <p>
+            <strong>Subject:</strong> School project
+          </p>
+
+        </div>
+
+        <div class="email-body">
+
+          <p>Hi Alex,</p>
+
+          <p>
+            Our teacher has asked us to prepare a project about
+            interesting places in our town.
+            I think it could be a fun project, but we need to decide
+            what to include.
+            Which place do you think we should focus on?
+            <span class="task-point">
+              Choose a place.
+            </span>
+          </p>
+
+          <p>
+            I was thinking about visiting the place to take some photos.
+            What else could we do to make the project more interesting?
+            <span class="task-point">
+              Suggest an activity.
+            </span>
+          </p>
+
+          <p>
+            We also need some information about the place.
+            How could we find out more about it?
+            <span class="task-point">
+              Suggest a way to get information.
+            </span>
+          </p>
+
+          <p>
+            Finally, how do you think we should present our project
+            to the class?
+            <span class="task-point">
+              Make a suggestion and explain why.
+            </span>
+          </p>
+
+          <p>
+            Write back soon!
+          </p>
+
+          <p>
+            Lucy
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="analysis-box">
+
+        <h3>Tu pequeño plan</h3>
+
+        <div class="analysis-item">
+          <strong>1. Lugar:</strong>
+          ¿Qué lugar podrías elegir?
+        </div>
+
+        <div class="analysis-item">
+          <strong>2. Actividad:</strong>
+          ¿Qué podríais hacer para que el proyecto sea más interesante?
+        </div>
+
+        <div class="analysis-item">
+          <strong>3. Información:</strong>
+          ¿Dónde o cómo podríais conseguir información?
+        </div>
+
+        <div class="analysis-item">
+          <strong>4. Presentación:</strong>
+          ¿Cómo presentaríais el proyecto? ¿Por qué?
+        </div>
+
+      </div>
+
+      <div class="key-box">
+
+        <p>
+          <strong>💡 Fíjate en el método:</strong>
+          primero identificamos los puntos, después pensamos una idea
+          para cada uno y finalmente añadimos una razón o detalle
+          cuando sea necesario.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- PASO 3 -->
+
+    <section class="card">
+
+      <h2>🧩 Paso 3: Organiza tu email</h2>
+
+      <p class="structure-intro">
+        No necesitas una estructura complicada. Puedes seguir este esquema:
+      </p>
+
+      <ol class="structure-list">
+
+        <li>
+
+          <span class="structure-number">1</span>
+
+          <div class="structure-content">
+
+            <strong>Saludo</strong><br>
+
+            <em>Hi Alex,</em>
+
+          </div>
+
+        </li>
+
+        <li>
+
+          <span class="structure-number">2</span>
+
+          <div class="structure-content">
+
+            <strong>Introducción</strong><br>
+
+            <em>Thanks for your email.</em>
+
+          </div>
+
+        </li>
+
+        <li>
+
+          <span class="structure-number">3</span>
+
+          <div class="structure-content">
+
+            <strong>Responde a los puntos</strong><br>
+
+            Una o dos ideas por punto, con razones o detalles.
+
+          </div>
+
+        </li>
+
+        <li>
+
+          <span class="structure-number">4</span>
+
+          <div class="structure-content">
+
+            <strong>Despedida</strong><br>
+
+            <em>Let me know what you think. See you soon!</em>
+
+          </div>
+
+        </li>
+
+      </ol>
+
+    </section>
+
+
+    <!-- FRASES ÚTILES -->
+
+    <section class="card">
+
+      <h2>💬 Frases que puedes utilizar</h2>
+
+      <ul class="phrase-list">
+
+        <li>
+          <strong>Empezar:</strong>
+          <em>Thanks for your email.</em>
+        </li>
+
+        <li>
+          <strong>Opinión:</strong>
+          <em>I think it’s a great idea because...</em>
+        </li>
+
+        <li>
+          <strong>Sugerencia:</strong>
+          <em>How about ...?</em>
+        </li>
+
+        <li>
+          <strong>Alternativa:</strong>
+          <em>We could also...</em>
+        </li>
+
+        <li>
+          <strong>Razón:</strong>
+          <em>I think it would be better because...</em>
+        </li>
+
+        <li>
+          <strong>Preferencia:</strong>
+          <em>I would prefer to...</em>
+        </li>
+
+        <li>
+          <strong>Añadir:</strong>
+          <em>It would also be a good idea to...</em>
+        </li>
+
+        <li>
+          <strong>Terminar:</strong>
+          <em>Let me know what you think.</em>
+        </li>
+
+      </ul>
+
+    </section>
+
+
+    <!-- PLANTILLA -->
+
+    <section class="template">
+
+      <h3>📋 Plantilla sencilla</h3>
+
+      <pre>Hi <span class="placeholder">[name]</span>,
+
+Thanks for your email. I think <span class="placeholder">[opinion]</span> because <span class="placeholder">[reason]</span>.
+
+We could <span class="placeholder">[suggestion]</span> because <span class="placeholder">[reason]</span>.
+
+I think <span class="placeholder">[option]</span> would be better because <span class="placeholder">[reason]</span>.
+
+We could also <span class="placeholder">[suggestion]</span>. I think <span class="placeholder">[opinion]</span> because <span class="placeholder">[reason]</span>.
+
+Let me know what you think.
+
+See you soon,
+<span class="placeholder">[your name]</span></pre>
+
+    </section>
+
+
+    <!-- CONSEJO -->
+
+    <section class="card">
+
+      <h2>⚠️ Usa la plantilla como ayuda</h2>
+
+      <p>
+        No la memorices palabra por palabra. Utiliza la estructura
+        y adapta las frases a cada situación.
+      </p>
+
+      <div class="key-box">
+
+        <p>
+          <strong>Recuerda:</strong>
+          claridad + todos los puntos + razones o detalles.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- CHECKLIST -->
+
+    <section class="card">
+
+      <h2>✅ Antes de entregar</h2>
+
+      <ul class="checklist">
+
+        <li>
+          He respondido a todos los puntos.
+        </li>
+
+        <li>
+          He desarrollado mis ideas.
+        </li>
+
+        <li>
+          He utilizado párrafos.
+        </li>
+
+        <li>
+          El tono es adecuado.
+        </li>
+
+        <li>
+          He revisado la gramática.
+        </li>
+
+        <li>
+          He revisado la ortografía.
+        </li>
+
+        <li>
+          Tengo aproximadamente 100–120 palabras.
+        </li>
+
+        <li>
+          He incluido saludo y despedida.
+        </li>
+
+      </ul>
+
+    </section>
+
+
+    <!-- EJERCICIO FINAL -->
+
+    <section class="practice-box">
+
+      <h2>✍️ ¡Ahora te toca a ti!</h2>
+
+      <p class="practice-intro">
+        Ahora aplica todo lo que has aprendido a una tarea nueva.
+        Responde a los cuatro puntos y escribe aproximadamente
+        <strong>100–120 palabras</strong>.
+      </p>
+
+      <div class="email-box">
+
+        <div class="email-header">
+
+          <p>
+            <strong>From:</strong> Charles
+          </p>
+
+          <p>
+            <strong>Subject:</strong> Friendly soccer match
+          </p>
+
+        </div>
+
+        <div class="email-body">
+
+          <p>Hello Jane,</p>
+
+          <p>
+            I’m writing because, as you know, our team is training hard
+            and the coming season is starting in a couple of weeks.
+            I thought we could organise a friendly match against the
+            St Peter’s High School team in London.
+            Do you think it’s a good idea?
+            <span class="task-point">
+              (Give your opinion.)
+            </span>
+          </p>
+
+          <p>
+            If so, can you think of a good place to hold the match?
+            <span class="task-point">
+              (Suggest a place.)
+            </span>
+          </p>
+
+          <p>
+            Would it be best to hold it on a weekday or at the weekend?
+            <span class="task-point">
+              (Choose one and say why.)
+            </span>
+          </p>
+
+          <p>
+            Also, I’m thinking of having lunch in London after the game.
+            What kind of restaurant do you think our teammates would like
+            to go to?
+            <span class="task-point">
+              (Give your opinion and a reason.)
+            </span>
+          </p>
+
+          <p>
+            Email me soon!
+          </p>
+
+          <p>
+            Charles
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="student-writing">
+
+        <h3>📝 Escribe tu respuesta</h3>
+
+        <textarea
+          id="studentWriting"
+          placeholder="Dear Charles,
+
+Thanks for your email...
+
+Write your reply here..."
+        ></textarea>
+
+        <div class="writing-footer">
+
+          <span
+            id="wordCounter"
+            class="word-counter"
+          >
+            0 palabras
+          </span>
+
+          <button
+            type="button"
+            class="check-button"
+            onclick="prepareCorrection()"
+          >
+            🔍 Corregir mi email
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="feedbackArea"
+        class="feedback-area"
+      >
+
+        <div class="feedback-box">
+
+          <h3>🤖 Tu corrección</h3>
+
+          <p>
+            Aquí aparecerá la corrección automática de tu email.
+          </p>
+
+          <p>
+            <strong>Realización de la tarea:</strong> —
+          </p>
+
+          <p>
+            <strong>Gramática:</strong> —
+          </p>
+
+          <p>
+            <strong>Vocabulario:</strong> —
+          </p>
+
+          <p>
+            <strong>Organización:</strong> —
+          </p>
+
+          <p class="feedback-note">
+            La corrección automática se conectará en el siguiente paso.
+          </p>
+
+          <button
+            type="button"
+            class="feedback-button"
+            onclick="hideFeedback()"
+          >
+            Ocultar corrección
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <footer>
+      Cambridge B1 Preliminary · Writing Part 1
+    </footer>
+
+  </main>
+
+
+  <script>
+
+    /* CONTADOR DE PALABRAS */
+
+    const writingBox =
+      document.getElementById("studentWriting");
+
+    const counter =
+      document.getElementById("wordCounter");
+
+
+    writingBox.addEventListener("input", function () {
+
+      const text =
+        writingBox.value.trim();
+
+      if (!text) {
+
+        counter.textContent = "0 palabras";
+
+        counter.className = "word-counter";
+
+        return;
+
+      }
+
+      const words =
+        text
+          .split(/\s+/)
+          .filter(Boolean)
+          .length;
+
+      counter.textContent =
+        words + (words === 1 ? " palabra" : " palabras");
+
+
+      if (words >= 100 && words <= 120) {
+
+        counter.className =
+          "word-counter good";
+
+      } else if (words >= 80 && words <= 140) {
+
+        counter.className =
+          "word-counter warning";
+
+      } else {
+
+        counter.className =
+          "word-counter";
+
+      }
+
+    });
+
+
+    /* BOTÓN DE CORRECCIÓN */
+async function prepareCorrection() {
+
+  const text = writingBox.value.trim();
+
+  if (!text) {
+    alert("Escribe tu email antes de comprobarlo.");
+    writingBox.focus();
+    return;
+  }
+
+  const words = text.split(/\s+/).filter(Boolean).length;
+
+  if (words < 40) {
+    alert(
+      "Tu email es demasiado corto. Intenta escribir una respuesta completa antes de comprobarlo."
+    );
+    writingBox.focus();
+    return;
+  }
+
+  const button = document.querySelector(".check-button");
+  const feedbackArea = document.getElementById("feedbackArea");
+  const feedbackBox = feedbackArea.querySelector(".feedback-box");
+
+  button.disabled = true;
+  button.textContent = "⏳ Corrigiendo...";
+
+  feedbackArea.classList.add("visible");
+
+  feedbackBox.innerHTML = `
+    <h3>🤖 Corrigiendo tu email...</h3>
+    <p>Gemini está analizando tu respuesta. Puede tardar unos segundos.</p>
+  `;
+
+  feedbackArea.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  try {
+
+    const response = await fetch("/api/correct", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: text
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "No se ha podido corregir el email."
+      );
+    }
+
+    renderFeedback(data);
+
+  } catch (error) {
+
+    feedbackBox.innerHTML = `
+      <h3>⚠️ No se ha podido corregir</h3>
+      <p>${escapeHtml(error.message)}</p>
+      <p class="feedback-note">
+        Comprueba que el servidor está funcionando y vuelve a intentarlo.
+      </p>
+      <button
+        type="button"
+        class="feedback-button"
+        onclick="hideFeedback()"
+      >
+        Ocultar
+      </button>
+    `;
+
+  }
+
+  button.disabled = false;
+  button.textContent = "🔍 Corregir mi email";
+
+}
+
+
+    /* OCULTAR CORRECCIÓN */
+
+function renderFeedback(data) {
+
+  const feedbackArea =
+    document.getElementById("feedbackArea");
+
+  const feedbackBox =
+    feedbackArea.querySelector(".feedback-box");
+
+  const grammar =
+    data.grammar || [];
+
+  const vocabulary =
+    data.vocabulary || [];
+  const taskAchievement = Array.isArray(data.taskAchievement)
+  ? data.taskAchievement
+  : [];
+  let taskAchievementHTML = "";
+
+  if (taskAchievement.length === 0) {
+
+    taskAchievementHTML = `
+      <p>No se ha podido analizar la realización de la tarea.</p>
+    `;
+
+  } else {
+
+    taskAchievementHTML = taskAchievement.map(item => `
+      <div class="task-point ${item.completed ? "completed" : "missing"}">
+
+        <span class="task-point-icon">
+          ${item.completed ? "✓" : "✗"}
+        </span>
+
+        <span>
+          ${escapeHtml(item.point)}
+        </span>
+
+      </div>
+    `).join("");
+
+  }
+
+  let grammarHTML = "";
+
+  if (grammar.length === 0) {
+
+    grammarHTML = `
+      <p>✅ No se han detectado errores gramaticales importantes.</p>
+    `;
+
+  } else {
+
+    grammarHTML = grammar.map(item => `
+      <div class="feedback-item">
+
+        <p>
+          ❌ <strong>${escapeHtml(item.original)}</strong>
+        </p>
+
+        <p>
+          ✅ <strong>${escapeHtml(item.correction)}</strong>
+        </p>
+
+        <p>
+          💡 ${escapeHtml(item.explanation)}
+        </p>
+
+      </div>
+    `).join("");
+
+  }
+
+
+  let vocabularyHTML = "";
+
+  if (vocabulary.length === 0) {
+
+    vocabularyHTML = `
+      <p>✅ Tu vocabulario es adecuado para la tarea.</p>
+    `;
+
+  } else {
+
+    vocabularyHTML = vocabulary.map(item => `
+      <div class="feedback-item">
+
+        <p>
+          <strong>${escapeHtml(item.original)}</strong>
+          →
+          <strong>${escapeHtml(item.suggestion)}</strong>
+        </p>
+
+        <p>
+          💡 ${escapeHtml(item.explanation)}
+        </p>
+
+      </div>
+    `).join("");
+
+  }
+
+
+  feedbackBox.innerHTML = `
+
+    <h3>🤖 Tu corrección</h3>
+
+
+    <div class="feedback-section">
+
+  <h4>🎯 Realización de la tarea</h4>
+
+  <div class="task-achievement">
+  ${taskAchievementHTML}
+</div>
+
+</div>
+
+
+    <div class="feedback-section">
+
+      <h4>✍️ Gramática</h4>
+
+      ${grammarHTML}
+
+    </div>
+
+
+    <div class="feedback-section">
+
+      <h4>📚 Vocabulario</h4>
+
+      ${vocabularyHTML}
+
+    </div>
+
+
+    <div class="feedback-section">
+
+      <h4>🧩 Organización</h4>
+
+      <p>
+        ${escapeHtml(data.organisation)}
+      </p>
+
+    </div>
+
+
+    <div class="feedback-section">
+
+      <h4>🔢 Número de palabras</h4>
+
+      <p>
+        <strong>${data.wordCount}</strong> palabras
+      </p>
+
+    </div>
+
+
+    <div class="feedback-section">
+
+      <h4>💡 Comentario general</h4>
+
+      <p>
+        ${escapeHtml(data.generalFeedback)}
+      </p>
+
+    </div>
+
+
+    <div class="feedback-section improved-version">
+
+      <h4>✨ Versión corregida</h4>
+
+      <p>
+        Esta versión mantiene tus ideas y corrige los principales errores.
+      </p>
+
+      <div class="corrected-email">
+        ${escapeHtml(data.improvedVersion)}
+      </div>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="feedback-button"
+      onclick="hideFeedback()"
+    >
+      Ocultar corrección
+    </button>
+
+  `;
+
+}
+
+function escapeHtml(text) {
+
+  if (text === null || text === undefined) {
+    return "";
+  }
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+    function hideFeedback() {
+
+      document
+        .getElementById("feedbackArea")
+        .classList.remove("visible");
+
+    }
+
+  </script>
+
+</body>
+</html>
