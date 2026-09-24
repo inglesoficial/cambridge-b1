@@ -123,7 +123,7 @@ function wait(ms) {
 
 
 /* =========================================================
-   LLAMADA A GEMINI CON REINTENTOS
+   GEMINI CON REINTENTOS AUTOMÁTICOS
    ========================================================= */
 
 async function generateWithRetry(prompt) {
@@ -148,10 +148,11 @@ async function generateWithRetry(prompt) {
         `Gemini: intento ${attempt} de ${maxAttempts}`
       );
 
+
       const response =
         await ai.models.generateContent({
 
-          model: "gemini-3.6-flash",
+          model: "gemini-3.5-flash-lite",
 
           contents: prompt,
 
@@ -160,6 +161,11 @@ async function generateWithRetry(prompt) {
           }
 
         });
+
+
+      console.log(
+        "Gemini: respuesta recibida correctamente."
+      );
 
 
       return response;
@@ -182,11 +188,19 @@ async function generateWithRetry(prompt) {
           : "";
 
 
-      const is503 =
+      const lowerMessage =
+        message.toLowerCase();
+
+
+      const isTemporaryError =
         String(status) === "503" ||
-        message.includes("503") ||
-        message.toLowerCase().includes("high demand") ||
-        message.toLowerCase().includes("unavailable");
+        String(status) === "429" ||
+        lowerMessage.includes("503") ||
+        lowerMessage.includes("429") ||
+        lowerMessage.includes("high demand") ||
+        lowerMessage.includes("unavailable") ||
+        lowerMessage.includes("overloaded") ||
+        lowerMessage.includes("resource exhausted");
 
 
       console.error(
@@ -195,8 +209,13 @@ async function generateWithRetry(prompt) {
       );
 
 
+      /*
+       * Si no es un error temporal,
+       * no tiene sentido volver a intentarlo.
+       */
+
       if (
-        !is503 ||
+        !isTemporaryError ||
         attempt >= maxAttempts
       ) {
 
@@ -206,7 +225,7 @@ async function generateWithRetry(prompt) {
 
 
       console.log(
-        `Gemini está temporalmente saturado. Esperando ${delays[attempt - 1] / 1000} segundos antes de reintentar...`
+        `Gemini temporalmente no disponible. Reintentando en ${delays[attempt - 1] / 1000} segundos...`
       );
 
 
@@ -310,6 +329,7 @@ app.post("/api/correct", async function (req, res) {
 
     const taskBody =
       stripHtml(task.body || "");
+
 
     const taskPoints =
       task.points
@@ -545,7 +565,7 @@ Use exactly this structure:
 
 
     /* =======================================================
-       LLAMADA A GEMINI CON REINTENTOS
+       LLAMADA A GEMINI
        ======================================================= */
 
     const response =
@@ -557,6 +577,7 @@ Use exactly this structure:
        ======================================================= */
 
     let responseText = "";
+
 
     if (
       response &&
@@ -667,8 +688,7 @@ Use exactly this structure:
 
 
     /*
-       El contador real lo calcula nuestro servidor,
-       no Gemini.
+       El contador real lo calcula nuestro servidor.
     */
 
     data.wordCount =
