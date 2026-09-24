@@ -15,12 +15,13 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
+const MODEL = "gemini-3.1-flash-lite";
+
 // ===============================
 // MIDDLEWARE
 // ===============================
 
 app.use(cors());
-
 app.use(express.json());
 
 // ===============================
@@ -35,20 +36,17 @@ app.get("/api/health", (req, res) => {
 });
 
 // ===============================
-// DIAGNÓSTICO DE MODELOS
+// LISTAR MODELOS
 // ===============================
 
 app.get("/api/models", async (req, res) => {
 
   try {
 
-    console.log("=================================");
-    console.log("INICIANDO DIAGNÓSTICO DE MODELOS");
-    console.log("=================================");
+    console.log("Consultando modelos disponibles...");
 
     const models = [];
 
-    // Consultamos los modelos disponibles
     const response = await ai.models.list();
 
     for await (const model of response) {
@@ -56,42 +54,19 @@ app.get("/api/models", async (req, res) => {
       const supportedActions =
         model.supportedActions || [];
 
-      const supportsGenerateContent =
-        supportedActions.includes("generateContent");
-
       models.push({
         name: model.name || null,
         displayName: model.displayName || null,
         baseModelId: model.baseModelId || null,
         supportedActions: supportedActions,
-        supportsGenerateContent: supportsGenerateContent,
+        supportsGenerateContent:
+          supportedActions.includes("generateContent"),
         inputTokenLimit:
           model.inputTokenLimit || null,
         outputTokenLimit:
           model.outputTokenLimit || null
       });
     }
-
-    console.log(
-      `Modelos encontrados: ${models.length}`
-    );
-
-    // Solo mostramos en el log los modelos que pueden generar contenido
-    console.log(
-      "MODELOS CON generateContent:"
-    );
-
-    models
-      .filter(model => model.supportsGenerateContent)
-      .forEach(model => {
-        console.log(
-          `${model.name} | ${model.displayName || ""}`
-        );
-      });
-
-    console.log(
-      "================================="
-    );
 
     return res.json({
       ok: true,
@@ -105,10 +80,9 @@ app.get("/api/models", async (req, res) => {
   } catch (error) {
 
     console.error(
-      "ERROR AL CONSULTAR LOS MODELOS:"
+      "ERROR AL CONSULTAR LOS MODELOS:",
+      error
     );
-
-    console.error(error);
 
     return res.status(
       error?.status || 500
@@ -126,7 +100,7 @@ app.get("/api/models", async (req, res) => {
 });
 
 // ===============================
-// COMPROBAR MODELOS CONCRETOS
+// COMPROBAR MODELO CONCRETO
 // ===============================
 
 app.get("/api/check-model/:model", async (req, res) => {
@@ -136,7 +110,7 @@ app.get("/api/check-model/:model", async (req, res) => {
   try {
 
     console.log(
-      `Comprobando disponibilidad de: ${modelName}`
+      `Comprobando modelo: ${modelName}`
     );
 
     const modelInfo =
@@ -188,12 +162,84 @@ app.get("/api/check-model/:model", async (req, res) => {
 });
 
 // ===============================
-// BLOQUEAMOS /api/correct
+// PRUEBA REAL DE GEMINI
 // ===============================
-//
-// No queremos hacer ninguna llamada
-// de generación durante el diagnóstico.
-//
+
+app.get("/api/test-gemini", async (req, res) => {
+
+  console.log("=================================");
+  console.log("PRUEBA REAL DE GEMINI");
+  console.log(`Modelo: ${MODEL}`);
+  console.log("Prompt: Say OK");
+  console.log("=================================");
+
+  try {
+
+    const startTime = Date.now();
+
+    const response = await ai.models.generateContent({
+      model: MODEL,
+      contents: "Say OK"
+    });
+
+    const elapsed =
+      Date.now() - startTime;
+
+    const text =
+      response?.text || "";
+
+    console.log(
+      `Gemini respondió correctamente en ${elapsed} ms`
+    );
+
+    console.log(
+      `Respuesta: ${text}`
+    );
+
+    return res.json({
+      ok: true,
+      model: MODEL,
+      response: text,
+      elapsedMs: elapsed
+    });
+
+  } catch (error) {
+
+    console.error(
+      "================================="
+    );
+
+    console.error(
+      "ERROR EN PRUEBA REAL DE GEMINI"
+    );
+
+    console.error(
+      error
+    );
+
+    console.error(
+      "================================="
+    );
+
+    return res.status(
+      error?.status || 500
+    ).json({
+      ok: false,
+      model: MODEL,
+      error: String(
+        error?.message || error
+      ),
+      status:
+        error?.status ||
+        error?.code ||
+        null
+    });
+  }
+});
+
+// ===============================
+// CORRECCIÓN DESACTIVADA
+// ===============================
 
 app.post("/api/correct", (req, res) => {
 
@@ -215,7 +261,11 @@ app.listen(PORT, () => {
   );
 
   console.log(
-    "No se realizarán llamadas de generación."
+    `Modelo de prueba: ${MODEL}`
+  );
+
+  console.log(
+    "Endpoint de prueba: /api/test-gemini"
   );
 
 });
