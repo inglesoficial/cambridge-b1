@@ -110,6 +110,118 @@ function cleanJson(text) {
 
 
 /* =========================================================
+   ESPERA
+   ========================================================= */
+
+function wait(ms) {
+
+  return new Promise(function (resolve) {
+    setTimeout(resolve, ms);
+  });
+
+}
+
+
+/* =========================================================
+   LLAMADA A GEMINI CON REINTENTOS
+   ========================================================= */
+
+async function generateWithRetry(prompt) {
+
+  const maxAttempts = 4;
+
+  const delays = [
+    3000,
+    6000,
+    12000
+  ];
+
+  for (
+    let attempt = 1;
+    attempt <= maxAttempts;
+    attempt++
+  ) {
+
+    try {
+
+      console.log(
+        `Gemini: intento ${attempt} de ${maxAttempts}`
+      );
+
+      const response =
+        await ai.models.generateContent({
+
+          model: "gemini-3.6-flash",
+
+          contents: prompt,
+
+          config: {
+            responseMimeType: "application/json"
+          }
+
+        });
+
+
+      return response;
+
+
+    } catch (error) {
+
+      const status =
+        error &&
+        (
+          error.status ||
+          error.code
+        );
+
+
+      const message =
+        error &&
+        error.message
+          ? error.message
+          : "";
+
+
+      const is503 =
+        String(status) === "503" ||
+        message.includes("503") ||
+        message.toLowerCase().includes("high demand") ||
+        message.toLowerCase().includes("unavailable");
+
+
+      console.error(
+        `Error Gemini en intento ${attempt}:`,
+        message
+      );
+
+
+      if (
+        !is503 ||
+        attempt >= maxAttempts
+      ) {
+
+        throw error;
+
+      }
+
+
+      console.log(
+        `Gemini está temporalmente saturado. Esperando ${delays[attempt - 1] / 1000} segundos antes de reintentar...`
+      );
+
+
+      await wait(
+        delays[attempt - 1]
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
    RUTA PRINCIPAL
    ========================================================= */
 
@@ -433,21 +545,11 @@ Use exactly this structure:
 
 
     /* =======================================================
-       LLAMADA A GEMINI
+       LLAMADA A GEMINI CON REINTENTOS
        ======================================================= */
 
     const response =
-      await ai.models.generateContent({
-
-        model: "gemini-3.6-flash",
-
-        contents: prompt,
-
-        config: {
-          responseMimeType: "application/json"
-        }
-
-      });
+      await generateWithRetry(prompt);
 
 
     /* =======================================================
