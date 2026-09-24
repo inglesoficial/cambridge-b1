@@ -1,5 +1,5 @@
 const express = require("express");
-const path = require("path");
+const cors = require("cors");
 require("dotenv").config();
 
 const { GoogleGenAI } = require("@google/genai");
@@ -7,508 +7,614 @@ const { GoogleGenAI } = require("@google/genai");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
+/* =========================================================
+   CONFIGURACIÓN
+   ========================================================= */
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"]
+  })
+);
+
+app.use(
+  express.json({
+    limit: "100kb"
+  })
+);
+
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
 
 /* =========================================================
-   CORS
-   Permite que inglesoficial.com pueda llamar a Render
+   FUNCIONES AUXILIARES
    ========================================================= */
 
-const allowedOrigins = [
-  "https://www.inglesoficial.com",
-  "https://inglesoficial.com"
-];
+function countWords(text) {
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Vary", "Origin");
+  if (!text || typeof text !== "string") {
+    return 0;
   }
 
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "POST, OPTIONS"
-  );
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .length;
+}
 
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type"
-  );
 
-  // Responder a la petición previa de CORS
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
+function stripHtml(html) {
+
+  if (!html || typeof html !== "string") {
+    return "";
   }
 
-  next();
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#039;/gi, "'")
+    .replace(/\n\s*\n\s*\n/g, "\n\n")
+    .trim();
+}
+
+
+/* =========================================================
+   LIMPIAR RESPUESTA JSON DE GEMINI
+   ========================================================= */
+
+function cleanJson(text) {
+
+  if (!text || typeof text !== "string") {
+    throw new Error("Gemini no ha devuelto ningún contenido.");
+  }
+
+  let cleaned = text.trim();
+
+  /*
+     Si Gemini devuelve:
+     ```json
+     {...}
+     ```
+     eliminamos las marcas.
+  */
+
+  cleaned = cleaned
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  /*
+     Buscamos el primer { y el último }
+     por si Gemini añade algún texto adicional.
+  */
+
+  const firstBrace =
+    cleaned.indexOf("{");
+
+  const lastBrace =
+    cleaned.lastIndexOf("}");
+
+  if (
+    firstBrace !== -1 &&
+    lastBrace !== -1 &&
+    lastBrace > firstBrace
+  ) {
+
+    cleaned =
+      cleaned.substring(
+        firstBrace,
+        lastBrace + 1
+      );
+
+  }
+
+  return JSON.parse(cleaned);
+}
+
+
+/* =========================================================
+   RUTA PRINCIPAL
+   ========================================================= */
+
+app.get("/", function (req, res) {
+
+  res.json({
+    ok: true,
+    message: "Cambridge B1 Writing API funcionando correctamente."
+  });
+
 });
 
 
 /* =========================================================
-   MIDDLEWARE
+   HEALTH CHECK
    ========================================================= */
 
-app.use(express.json({ limit: "20kb" }));
+app.get("/api/health", function (req, res) {
 
-app.use(express.static(path.join(__dirname)));
+  res.json({
+    ok: true,
+    service: "cambridge-b1"
+  });
+
+});
 
 
 /* =========================================================
-   API: CORREGIR EMAIL
+   CORRECCIÓN DEL EMAIL
    ========================================================= */
 
-app.post("/api/correct", async (req, res) => {
+app.post("/api/correct", async function (req, res) {
 
   try {
 
-    const email = req.body.email;
+    const email =
+      req.body && req.body.email;
+
+    const task =
+      req.body && req.body.task;
 
 
-    /* -----------------------------------------------------
-       Comprobar que se ha recibido texto
-       ----------------------------------------------------- */
+    /* -------------------------------------------------------
+       VALIDACIÓN
+       ------------------------------------------------------- */
 
-    if (!email || typeof email !== "string") {
+    if (
+      !email ||
+      typeof email !== "string"
+    ) {
 
       return res.status(400).json({
-        error: "No se ha recibido ningún email."
+        error: "No se ha recibido el email del alumno."
       });
 
     }
 
 
-    /* -----------------------------------------------------
-       Comprobar longitud mínima
-       ----------------------------------------------------- */
-
-    if (email.trim().length < 40) {
+    if (
+      !task ||
+      typeof task !== "object"
+    ) {
 
       return res.status(400).json({
-        error: "El email es demasiado corto."
+        error: "No se ha recibido la información de la tarea."
       });
 
     }
 
 
-    /* =====================================================
+    if (
+      !Array.isArray(task.points) ||
+      task.points.length === 0
+    ) {
+
+      return res.status(400).json({
+        error: "La tarea no contiene los puntos que deben responderse."
+      });
+
+    }
+
+
+    /* -------------------------------------------------------
+       DATOS DE LA TAREA
+       ------------------------------------------------------- */
+
+    const taskBody =
+      stripHtml(task.body || "");
+
+    const taskPoints =
+      task.points
+        .map(function (point, index) {
+
+          return (
+            (index + 1) +
+            ". " +
+            point
+          );
+
+        })
+        .join("\n");
+
+
+    const wordCount =
+      countWords(email);
+
+
+    /* =======================================================
        PROMPT PARA GEMINI
-       ===================================================== */
+       ======================================================= */
 
     const prompt = `
 
-You are an experienced Cambridge English teacher.
+You are an experienced Cambridge B1 Preliminary English teacher.
 
 You are correcting a Cambridge B1 Preliminary Writing Part 1 email.
 
-The student is a B1 English learner.
+Your job is to give useful, realistic feedback at approximately B1 level.
 
-Your job is to give useful, accurate and encouraging feedback that helps the student improve.
+IMPORTANT:
+The student's email must be evaluated against the EXACT task supplied below.
 
-IMPORTANT PRINCIPLES:
+=========================================================
+TASK
+=========================================================
 
-- Be encouraging, but honest.
-- Do not invent mistakes.
-- Do not penalise the student for using a different correct answer.
-- Do not assume that a more advanced expression is better.
-- Focus on accuracy, clarity, natural English and successful communication.
-- Do not rewrite the student's email completely.
-- Keep the student's ideas whenever possible.
-- Explain things in simple language suitable for a B1 learner.
-- If something is already correct, do not present it as a mistake.
-- Distinguish between real errors and optional improvements.
+From: ${task.from || ""}
 
+Subject: ${task.subject || ""}
 
-TASK:
+EMAIL TASK:
 
-The student had to reply to this email:
+${taskBody}
 
-From: Charles
-Subject: Friendly soccer match
+=========================================================
+TASK POINTS
+=========================================================
 
-Hello Jane,
+${taskPoints}
 
-I’m writing because, as you know, our team is training hard and the coming season is starting in a couple of weeks.
-
-I thought we could organise a friendly match against the St Peter’s High School team in London.
-
-Do you think it’s a good idea? (Give your opinion.)
-
-If so, can you think of a good place to hold the match? (Suggest a place.)
-
-Would it be best to hold it on a weekday or at the weekend? (Choose one and say why.)
-
-Also, I’m thinking of having lunch in London after the game.
-
-What kind of restaurant do you think our teammates would like to go to? (Give your opinion and a reason.)
-
-Email me soon!
-
-Charles
-
-
-STUDENT'S EMAIL:
+=========================================================
+STUDENT'S EMAIL
+=========================================================
 
 ${email}
-
-
-=========================================================
-TASK ACHIEVEMENT
-=========================================================
-
-Check the student's answer against the FOUR required task points:
-
-1. Give an opinion about organising the friendly match.
-2. Suggest a place to hold the match.
-3. Choose a weekday or the weekend and give a reason.
-4. Give an opinion about what kind of restaurant the teammates should go to AND give a reason.
-
-
-TASK ACHIEVEMENT FORMAT:
-
-Return "taskAchievement" as an array containing exactly four objects.
-
-Each object must have:
-
-- "point"
-- "completed"
-
-Use these four points exactly:
-
-1. "Opinión sobre el partido"
-2. "Lugar para el partido"
-3. "Día elegido y razón"
-4. "Restaurante y razón"
-
-
-For "completed":
-
-- Use true if the student clearly answered the point.
-- Use false if the student did not answer the point.
-- Use false if the student only partially answered the point.
-
-
-=========================================================
-GRAMMAR
-=========================================================
-
-Identify only genuine grammar, punctuation or sentence-structure errors.
-
-For every genuine error return:
-
-- "original"
-- "correction"
-- "explanation"
-
-If there are no important grammar errors, return an empty array.
-
-
-=========================================================
-VOCABULARY
-=========================================================
-
-Suggest improvements only when they genuinely help natural, precise or appropriate B1 English.
-
-Do not criticise correct simple vocabulary.
-
-Do not praise vocabulary simply because it is advanced.
-
-If there are no useful improvements, return an empty array.
-
-Each vocabulary object must contain:
-
-- "original"
-- "suggestion"
-- "explanation"
-
-
-=========================================================
-ORGANISATION
-=========================================================
-
-Comment briefly on:
-
-- paragraphing
-- logical order
-- linking words
-- clarity
-
-Only mention things that are actually relevant to the student's email.
-
 
 =========================================================
 WORD COUNT
 =========================================================
 
-Count the number of words in the student's original email.
+The student's email contains approximately ${wordCount} words.
 
-Useful target:
+The recommended Cambridge B1 Preliminary Part 1 length is approximately 100–120 words.
 
-100–120 words.
+=========================================================
+LANGUAGE RULE
+=========================================================
 
-If the answer is below 100 words, clearly tell the student to develop their ideas.
+This rule is VERY IMPORTANT.
 
-Do not treat word count as the only measure of quality.
+ALL explanations and feedback intended to explain the student's performance MUST BE IN SPANISH.
 
+Therefore:
+
+- taskAchievement comments MUST be in Spanish.
+- grammar explanations MUST be in Spanish.
+- vocabulary explanations MUST be in Spanish.
+- organisation MUST be in Spanish.
+- generalFeedback MUST be in Spanish.
+
+However:
+
+- original sentences MUST remain exactly as written by the student, in English.
+- corrected sentences MUST be in English.
+- vocabulary suggestions MUST be in English.
+- improvedVersion MUST be entirely in English.
+
+Do NOT translate the student's English sentences into Spanish.
+
+Do NOT write explanations in English.
+
+=========================================================
+TASK ACHIEVEMENT
+=========================================================
+
+Check every task point separately.
+
+For each point decide whether the student has actually answered it.
+
+Do not give credit merely because the student mentions a related word.
+
+The student must communicate an appropriate answer to the point.
+
+For every task point provide:
+
+- label: a short description in Spanish.
+- completed: true or false.
+- comment: a concise explanation IN SPANISH.
+
+=========================================================
+GRAMMAR
+=========================================================
+
+Identify the most relevant grammar errors.
+
+Do not invent errors.
+
+Do not correct perfectly acceptable B1 English merely because another formulation is possible.
+
+For every genuine grammar problem provide:
+
+- original: the exact problematic English text.
+- correction: the corrected English text.
+- explanation: why it is wrong and how to improve it, IN SPANISH.
+
+Focus on useful errors rather than producing a very long list.
+
+If there are no relevant grammar errors, return an empty array.
+
+=========================================================
+VOCABULARY
+=========================================================
+
+Identify relevant vocabulary problems or opportunities for improvement.
+
+Do not replace correct B1 vocabulary simply because a more advanced word exists.
+
+For each useful vocabulary improvement provide:
+
+- original: student's English.
+- suggestion: improved English.
+- explanation: explanation IN SPANISH.
+
+If there are no relevant vocabulary improvements, return an empty array.
+
+=========================================================
+ORGANISATION
+=========================================================
+
+Evaluate:
+
+- paragraphing
+- logical order
+- linking
+- opening
+- closing
+- overall clarity
+
+Give the explanation IN SPANISH.
 
 =========================================================
 GENERAL FEEDBACK
 =========================================================
 
-Give a short, encouraging and useful summary.
+Give concise, useful feedback IN SPANISH.
 
-Mention:
+Mention what the student did well and the main things they should improve.
 
-- missed task points
-- excessive shortness if relevant
-- one or two practical suggestions for improvement
+Do not give a numerical score.
 
+Do not pretend to provide an official Cambridge mark.
 
 =========================================================
 IMPROVED VERSION
 =========================================================
 
-Correct the student's email while keeping their ideas and style whenever possible.
+Write a possible improved version of the student's email.
 
-Do not completely rewrite it.
+IMPORTANT:
 
-If a task point is missing, add a short natural sentence covering that point.
+The improved version must:
 
-Aim for approximately 100–120 words.
-
-Keep the language appropriate for a B1 learner.
-
+- be entirely IN ENGLISH.
+- answer all task points.
+- sound natural for B1 level.
+- use approximately 100–120 words when reasonably possible.
+- preserve the student's original ideas where possible.
+- improve grammar, vocabulary and organisation.
+- include an appropriate greeting and closing.
+- NOT introduce completely unrelated ideas.
 
 =========================================================
-RETURN FORMAT
+OUTPUT FORMAT
 =========================================================
 
 Return ONLY valid JSON.
+
+Do not use Markdown.
+
+Do not write anything before or after the JSON.
 
 Use exactly this structure:
 
 {
   "taskAchievement": [
     {
-      "point": "Opinión sobre el partido",
-      "completed": true
-    },
-    {
-      "point": "Lugar para el partido",
-      "completed": true
-    },
-    {
-      "point": "Día elegido y razón",
-      "completed": true
-    },
-    {
-      "point": "Restaurante y razón",
-      "completed": true
+      "label": "string in Spanish",
+      "completed": true,
+      "comment": "string in Spanish"
     }
   ],
-  "grammar": [],
-  "vocabulary": [],
-  "organisation": "",
-  "wordCount": 0,
-  "generalFeedback": "",
-  "improvedVersion": ""
+  "wordCount": ${wordCount},
+  "grammar": [
+    {
+      "original": "English",
+      "correction": "English",
+      "explanation": "Spanish"
+    }
+  ],
+  "vocabulary": [
+    {
+      "original": "English",
+      "suggestion": "English",
+      "explanation": "Spanish"
+    }
+  ],
+  "organisation": "Spanish",
+  "generalFeedback": "Spanish",
+  "improvedVersion": "English"
 }
-
-For grammar objects use:
-
-{
-  "original": "",
-  "correction": "",
-  "explanation": ""
-}
-
-For vocabulary objects use:
-
-{
-  "original": "",
-  "suggestion": "",
-  "explanation": ""
-}
-
-No markdown.
-
-No comments.
-
-No text outside the JSON.
-
-taskAchievement MUST always contain exactly four objects.
-
-completed MUST always be either true or false.
-
-wordCount MUST be a number.
-
-grammar MUST be an array.
-
-vocabulary MUST be an array.
-
-organisation MUST be a string.
-
-generalFeedback MUST be a string.
-
-improvedVersion MUST be a string.
 
 `;
 
 
-/* =========================================================
-   MODELOS GEMINI
-   ========================================================= */
+    /* =======================================================
+       LLAMADA A GEMINI
+       ======================================================= */
 
-    const models = [
-      "gemini-3.5-flash-lite",
-      "gemini-3.5-flash",
-      "gemini-3.7-flash",
-      "gemini-3.1-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemini-flash-latest"
-    ];
+    const response =
+      await ai.models.generateContent({
 
+        model: "gemini-2.5-flash",
 
-    let response;
-    let lastError;
+        contents: prompt,
 
-
-    /* =====================================================
-       INTENTAR LOS MODELOS
-       ===================================================== */
-
-    for (const model of models) {
-
-      console.log(`Probando modelo: ${model}`);
-
-
-      for (let attempt = 1; attempt <= 2; attempt++) {
-
-        try {
-
-          console.log(
-            `Intento ${attempt} con ${model}`
-          );
-
-
-          response = await ai.models.generateContent({
-
-            model: model,
-
-            contents: prompt,
-
-            config: {
-              responseMimeType: "application/json"
-            }
-
-          });
-
-
-          console.log(
-            `Respuesta recibida de: ${model}`
-          );
-
-
-          break;
-
-
-        } catch (error) {
-
-          lastError = error;
-
-          const status =
-            error.status || error.code;
-
-
-          console.log(
-            `Error con ${model} (intento ${attempt}): ${status}`
-          );
-
-
-          if (
-            (status === 503 || status === 429) &&
-            attempt < 2
-          ) {
-
-            const delay = 3000 * attempt;
-
-            console.log(
-              `Esperando ${delay / 1000} segundos antes de reintentar...`
-            );
-
-
-            await new Promise(
-              resolve => setTimeout(resolve, delay)
-            );
-
-          } else {
-
-            break;
-
-          }
-
+        config: {
+          temperature: 0.2,
+          responseMimeType: "application/json"
         }
 
-      }
+      });
 
 
-      if (response) {
-        break;
-      }
+    /* =======================================================
+       OBTENER TEXTO
+       ======================================================= */
 
+    let responseText = "";
 
-      console.log(
-        `El modelo ${model} no ha podido responder. Probando el siguiente...`
-      );
+    if (
+      response &&
+      typeof response.text === "string"
+    ) {
+
+      responseText =
+        response.text;
+
+    } else if (
+      response &&
+      response.text
+    ) {
+
+      responseText =
+        String(response.text);
+
+    } else if (
+      response &&
+      response.candidates &&
+      response.candidates[0] &&
+      response.candidates[0].content &&
+      response.candidates[0].content.parts
+    ) {
+
+      responseText =
+        response.candidates[0]
+          .content
+          .parts
+          .map(function (part) {
+            return part.text || "";
+          })
+          .join("");
 
     }
 
 
-    /* =====================================================
-       SI NINGÚN MODELO RESPONDE
-       ===================================================== */
+    /* =======================================================
+       PARSEAR JSON
+       ======================================================= */
 
-    if (!response) {
-      throw lastError;
+    const data =
+      cleanJson(responseText);
+
+
+    /* =======================================================
+       ASEGURAR ESTRUCTURA
+       ======================================================= */
+
+    if (
+      !Array.isArray(
+        data.taskAchievement
+      )
+    ) {
+
+      data.taskAchievement = [];
+
     }
 
 
-    /* =====================================================
-       PROCESAR RESPUESTA
-       ===================================================== */
+    if (
+      !Array.isArray(
+        data.grammar
+      )
+    ) {
 
-    const result = JSON.parse(response.text);
+      data.grammar = [];
 
-
-    console.log(
-      "TASK ACHIEVEMENT RECIBIDO:",
-      result.taskAchievement
-    );
+    }
 
 
-    /* =====================================================
-       ENVIAR RESULTADO A BLOGGER
-       ===================================================== */
+    if (
+      !Array.isArray(
+        data.vocabulary
+      )
+    ) {
 
-    res.json(result);
+      data.vocabulary = [];
+
+    }
+
+
+    if (
+      typeof data.organisation !== "string"
+    ) {
+
+      data.organisation = "";
+
+    }
+
+
+    if (
+      typeof data.generalFeedback !== "string"
+    ) {
+
+      data.generalFeedback = "";
+
+    }
+
+
+    if (
+      typeof data.improvedVersion !== "string"
+    ) {
+
+      data.improvedVersion = "";
+
+    }
+
+
+    /*
+       El contador real lo calcula nuestro servidor,
+       no Gemini.
+    */
+
+    data.wordCount =
+      wordCount;
+
+
+    /* =======================================================
+       RESPUESTA
+       ======================================================= */
+
+    return res.json(data);
 
 
   } catch (error) {
 
     console.error(
-      "Gemini error:",
+      "ERROR EN /api/correct:",
       error
     );
 
 
-    res.status(500).json({
+    return res.status(500).json({
 
       error:
-        "No se ha podido corregir el email. Inténtalo de nuevo."
+        error &&
+        error.message
+          ? error.message
+          : "Error interno del servidor."
 
     });
 
@@ -521,10 +627,13 @@ improvedVersion MUST be a string.
    INICIAR SERVIDOR
    ========================================================= */
 
-app.listen(PORT, () => {
+app.listen(
+  PORT,
+  function () {
 
-  console.log(
-    `Servidor funcionando en http://localhost:${PORT}`
-  );
+    console.log(
+      `Cambridge B1 API escuchando en el puerto ${PORT}`
+    );
 
-});
+  }
+);
