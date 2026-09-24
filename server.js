@@ -152,7 +152,7 @@ async function generateWithRetry(prompt) {
       const response =
         await ai.models.generateContent({
 
-          model: "gemini-3.5-flash-lite",
+          model: "gemini-3.1-flash-lite",
 
           contents: prompt,
 
@@ -208,11 +208,6 @@ async function generateWithRetry(prompt) {
         message
       );
 
-
-      /*
-       * Si no es un error temporal,
-       * no tiene sentido volver a intentarlo.
-       */
 
       if (
         !isTemporaryError ||
