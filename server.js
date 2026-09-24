@@ -340,21 +340,21 @@ No comments.
 
 No text outside the JSON.
 
-`taskAchievement` MUST always contain exactly four objects.
+taskAchievement MUST always contain exactly four objects.
 
-`completed` MUST always be either true or false.
+completed MUST always be either true or false.
 
-`wordCount` MUST be a number.
+wordCount MUST be a number.
 
-`grammar` MUST be an array.
+grammar MUST be an array.
 
-`vocabulary` MUST be an array.
+vocabulary MUST be an array.
 
-`organisation` MUST be a string.
+organisation MUST be a string.
 
-`generalFeedback` MUST be a string.
+generalFeedback MUST be a string.
 
-`improvedVersion` MUST be a string.
+improvedVersion MUST be a string.
 
 `;
 
