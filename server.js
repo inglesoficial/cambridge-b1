@@ -83,30 +83,14 @@ function cleanJson(text) {
 
   let cleaned = text.trim();
 
-  /*
-     Si Gemini devuelve:
-     ```json
-     {...}
-     ```
-     eliminamos las marcas.
-  */
-
   cleaned = cleaned
     .replace(/^```json\s*/i, "")
     .replace(/^```\s*/i, "")
     .replace(/\s*```$/i, "")
     .trim();
 
-  /*
-     Buscamos el primer { y el último }
-     por si Gemini añade algún texto adicional.
-  */
-
-  const firstBrace =
-    cleaned.indexOf("{");
-
-  const lastBrace =
-    cleaned.lastIndexOf("}");
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
 
   if (
     firstBrace !== -1 &&
@@ -114,11 +98,10 @@ function cleanJson(text) {
     lastBrace > firstBrace
   ) {
 
-    cleaned =
-      cleaned.substring(
-        firstBrace,
-        lastBrace + 1
-      );
+    cleaned = cleaned.substring(
+      firstBrace,
+      lastBrace + 1
+    );
 
   }
 
@@ -314,8 +297,6 @@ TASK ACHIEVEMENT
 
 Check every task point separately.
 
-For each point decide whether the student has actually answered it.
-
 Do not give credit merely because the student mentions a related word.
 
 The student must communicate an appropriate answer to the point.
@@ -458,12 +439,11 @@ Use exactly this structure:
     const response =
       await ai.models.generateContent({
 
-        model: "gemini-2.5-flash",
+        model: "gemini-3.6-flash",
 
         contents: prompt,
 
         config: {
-          temperature: 0.2,
           responseMimeType: "application/json"
         }
 
